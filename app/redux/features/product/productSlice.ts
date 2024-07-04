@@ -1,5 +1,5 @@
-import { Reducer, createSlice } from '@reduxjs/toolkit';
-import { productApi } from '../../services/productApi';
+import { Reducer, createSlice } from "@reduxjs/toolkit";
+import { productApi } from "../../services/productApi";
 
 export interface ProductStatePayload {
   loading: boolean;
@@ -20,7 +20,7 @@ export const initialProductState: ProductStatePayload = {
 };
 
 export const productSlice = createSlice({
-  name: 'product',
+  name: "product",
   initialState: initialProductState,
   reducers: {
     resetProductSuccess: (state) => {
@@ -37,12 +37,14 @@ export const productSlice = createSlice({
         productApi.endpoints.createProduct.matchFulfilled,
         (state: any, { payload }: any) => {
           state.message = payload.message;
+          state.success = true;
         }
       )
       .addMatcher(
         productApi.endpoints.updateProduct.matchFulfilled,
         (state: any, { payload }: any) => {
           state.message = payload.message;
+          state.success = true;
         }
       )
       .addMatcher(
@@ -65,7 +67,8 @@ export const productSlice = createSlice({
       )
       .addMatcher(
         (action: any) =>
-          action.type.endsWith('/rejected') && action.payload?.data?.sliceName === 'productApi',
+          action.type.endsWith("/rejected") &&
+          action.payload?.data?.sliceName === "productApi",
         (state: any, action: any) => {
           state.loading = false;
           state.error = action.payload.data;
@@ -74,6 +77,7 @@ export const productSlice = createSlice({
   },
 });
 
-export const productReducer = productSlice.reducer as Reducer<ProductStatePayload>;
+export const productReducer =
+  productSlice.reducer as Reducer<ProductStatePayload>;
 
 export const { resetProductSuccess, resetProductError } = productSlice.actions;
