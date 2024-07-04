@@ -6,7 +6,6 @@ const useProductForm = (data: any) => {
     quantity: 0,
     description: "",
     image: "",
-    id: "",
   });
 
   useEffect(() => {
@@ -17,7 +16,6 @@ const useProductForm = (data: any) => {
         image: data?.image,
         quantity: data?.quantity,
         description: data?.description,
-        id: data?.id,
       }));
     }
   }, [data]);

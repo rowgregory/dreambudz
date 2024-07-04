@@ -57,7 +57,7 @@ const ProductEditCreate = () => {
 
   const handleProductUpdate = async () => {
     dispatch(setProgress(15));
-    await updateProduct(inputs)
+    await updateProduct({ ...inputs, id: product.id })
       .unwrap()
       .then(handleSuccess)
       .catch(handleErrors);
