@@ -1,5 +1,5 @@
 import { persistor, useAppDispatch } from '../../../store';
-import { resetAuthSuccess } from '../../auth/authSlice';
+import { resetAuth } from '../../auth/authSlice';
 import {
   setProgress,
   toggleProgressBar,
@@ -24,7 +24,7 @@ const AdminMobileNavigation = ({ toggleMobileMenu, close }: any) => {
     soundEffect?.play();
     persistor.purge();
     dispatch(setProgress(50));
-    dispatch(resetAuthSuccess());
+    dispatch(resetAuth());
     dispatch(setProgress(100));
     navigate.push('/auth/login');
 

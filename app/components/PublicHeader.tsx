@@ -10,7 +10,7 @@ import {
   setProgress,
   toggleProgressBar,
 } from '../redux/features/progress-bar/progressBarSlice';
-import { resetAuthSuccess } from '../redux/features/auth/authSlice';
+import { resetAuth } from '../redux/features/auth/authSlice';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Logo } from '@/public/images';
@@ -35,7 +35,7 @@ const PublicHeader = () => {
     dispatch(setProgress(25));
     persistor.purge();
     dispatch(setProgress(50));
-    dispatch(resetAuthSuccess());
+    dispatch(resetAuth());
     dispatch(setProgress(100));
 
     setTimeout(() => {

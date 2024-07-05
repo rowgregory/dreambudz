@@ -1,6 +1,5 @@
 import Spinner from '@/app/components/common/Spinner';
 import Typewriter from '@/app/components/common/Typewriter';
-import { RootState, useAppSelector } from '@/app/redux/store';
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ChangeEvent, FC, FormEvent, RefObject } from 'react';
@@ -11,6 +10,7 @@ interface LockProps {
   code: string;
   handleVerifyCode: (e: FormEvent<HTMLFormElement>) => Promise<void>;
   isLoading: boolean;
+  success: boolean;
 }
 
 const Lock: FC<LockProps> = ({
@@ -19,8 +19,8 @@ const Lock: FC<LockProps> = ({
   code,
   handleVerifyCode,
   isLoading,
+  success
 }) => {
-  const success = useAppSelector((state: RootState) => state.code.success);
   return (
     <div className="flex">
       <div className="flex flex-col px-7">

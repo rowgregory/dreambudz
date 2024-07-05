@@ -3,7 +3,7 @@
 import { RootState, persistor, useAppDispatch } from '../../../store';
 import { useSelector } from 'react-redux';
 import { setProgress, toggleProgressBar } from '../../progress-bar/progressBarSlice';
-import { resetAuthSuccess } from '../../auth/authSlice';
+import { resetAuth } from '../../auth/authSlice';
 import { Logo } from '@/public/images';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -27,7 +27,7 @@ const AdminSideNavigation = () => {
     soundEffect?.play();
     persistor.purge();
     dispatch(setProgress(50));
-    dispatch(resetAuthSuccess());
+    dispatch(resetAuth());
     dispatch(setProgress(100));
     navigate.push('/auth/login');
 

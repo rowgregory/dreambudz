@@ -12,14 +12,15 @@ import { dashboardReducer } from "./features/dashboard/dashboardSlice";
 import { productReducer } from "./features/product/productSlice";
 import { codeReducer } from "./features/code/codeSlice";
 
-const authPersistConfig = {
-  key: "auth",
-  storage: storage,
-  blacklist: ["auth"],
-};
-
 const rootReducer = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer),
+  auth: persistReducer(
+    {
+      key: "auth",
+      storage,
+      blacklist: ["success"], // do not persist 'success' within 'auth'
+    },
+    authReducer
+  ),
   dashboard: dashboardReducer,
   product: productReducer,
   code: codeReducer,
