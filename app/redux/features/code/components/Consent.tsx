@@ -24,6 +24,7 @@ const Consent: FC<ConsentProps> = ({ token, setConsent, setCode }) => {
       />
       <div className="flex justify-center w-[200.22px]">
         <Link
+          data-testid="thumbs-up"
           href={`/code-validated/${token}/items`}
           className={`duration-200 ml-3 mt-8 text-sm font-bold`}
         >
