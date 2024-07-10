@@ -8,14 +8,6 @@ const nextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "https:/www.dreambudz.link/:path*",
-      },
-    ];
-  },
 };
 
 export default nextConfig;
