@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import Spinner from '../../components/common/Spinner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -18,13 +18,7 @@ const Dashboard = () => {
 
   const [showCode, setShowCode] = useState(false);
 
-  const { isLoading, refetch } = useGetDashboardDataQuery();
-
-  useEffect(() => {
-    if (dashboardInfo) {
-      refetch();
-    }
-  }, [dashboardInfo, refetch])
+  const { isLoading } = useGetDashboardDataQuery();
 
   return (
     <div className="min-h-screen pt-12 md:pt-16 px-[10px] sm:px-[16px] md:px-8 pb-3">

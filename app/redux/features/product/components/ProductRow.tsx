@@ -9,13 +9,13 @@ import { RootState } from '@/app/redux/store';
 const ProductRow = ({
   product,
   productToBeEdited,
-  setIdAndName,
+  setIdAndNameAndFileName,
   openModal,
   setProductToBeEdited,
   productMenuRef,
 }: any) => {
-
   const token = useSelector((state: RootState) => state.auth.token);
+
   return (
     <tr className="bg-zinc-800 z-1 h-[3.25rem] group [&_td]:focus-within:bg-zinc-900 [&_td]:hover:bg-zinc-900 relative">
       <td className="px-2">
@@ -29,7 +29,7 @@ const ProductRow = ({
       </td>
       <td>
         <p className="text-xs font-Matter-Regular items-center px-4 whitespace-nowrap">
-          {product?.quantity}
+          {product?.publish ? 'LIVE' : 'OFFLINE'}
         </p>
       </td>
       <td>
@@ -42,7 +42,7 @@ const ProductRow = ({
           productToBeEdited.product?.id === product?.id && (
             <div
               ref={productMenuRef}
-              className="flex flex-col justify-center shadow-lg p-1.5 absolute z-40 w-28 h-fit bg-[#0f1119] -top-[44px] right-28"
+              className="flex flex-col justify-center shadow-lg p-1.5 absolute z-40 w-28 h-fit bg-[#0f1119] -top-[44px] right-16 md:right-28"
             >
               <Link
                 href={{
@@ -69,9 +69,10 @@ const ProductRow = ({
               </Link>
               <button
                 onClick={() => {
-                  setIdAndName({
+                  setIdAndNameAndFileName({
                     id: product?.id,
                     name: product?.productName,
+                    fileName: product?.fileName
                   });
                   openModal();
                 }}

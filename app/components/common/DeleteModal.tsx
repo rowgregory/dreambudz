@@ -9,6 +9,7 @@ import {
   toggleProgressBar,
 } from '@/app/redux/features/progress-bar/progressBarSlice';
 import useSoundEffect from '@/app/utils/hooks/useSoundEffect';
+import { deleteImageFromFirebase } from '@/app/utils/firebase';
 
 export const useDeleteModal = () => {
   const [show, setShow] = useState(false);
@@ -24,14 +25,14 @@ export const useDeleteModal = () => {
   return { show, openModal, closeModal };
 };
 
-const DeleteModal = ({ idAndName, deleteDocument, loading, hook }: any) => {
+const DeleteModal = ({ idAndNameAndFileName, deleteDocument, loading, hook }: any) => {
   const dispatch = useAppDispatch();
 
   const soundEffect = useSoundEffect('/sound-effects/delete.mp3');
 
   const getAction = async () => {
     dispatch(setProgress(0));
-    await deleteDocument({ id: idAndName.id })
+    await deleteDocument({ id: idAndNameAndFileName.id })
       .unwrap()
       .then(() => {
         soundEffect?.play();
@@ -39,6 +40,8 @@ const DeleteModal = ({ idAndName, deleteDocument, loading, hook }: any) => {
         dispatch(toggleProgressBar(false));
         hook.closeModal();
       });
+
+    deleteImageFromFirebase(idAndNameAndFileName.fileName)
   };
 
   return (
@@ -48,7 +51,7 @@ const DeleteModal = ({ idAndName, deleteDocument, loading, hook }: any) => {
         <div className="bg-[#09090b] p-5 min-h-72 flex flex-col justify-between">
           <p className="font-Matter-Medium text-gray-400">
             Are you sure you want to delete{' '}
-            <span className="text-red-500 font-bold">{idAndName.name}</span>?
+            <span className="text-red-500 font-bold">{idAndNameAndFileName.name}</span>?
           </p>
           <div className="flex items-center justify-end gap-3">
             <button

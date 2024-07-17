@@ -6,7 +6,7 @@ const ProductsTable = ({
   filteredProducts,
   productToBeEdited,
   productMenuRef,
-  setIdAndName,
+  setIdAndNameAndFileName,
   openModal,
   setProductToBeEdited,
 }: any) => {
@@ -21,17 +21,12 @@ const ProductsTable = ({
           </th>
           <th className="px-4 font-Matter-Regular text-star py-2 first:-ml-4 first:pl-6 last:pr-6 select-none">
             <div className="text-xs flex flex-nowrap items-center gap-2">
-              Quantity
+              Publish
             </div>
           </th>
           <th className="px-4 font-Matter-Regular text-star py-2 first:-ml-4 first:pl-6 last:pr-6 select-none">
             <div className="text-xs flex flex-nowrap items-center gap-2">
               Date & Time
-            </div>
-          </th>
-          <th>
-            <div className="flex flex-nowrap items-center gap-2 invisible">
-              ghosthead
             </div>
           </th>
         </tr>
@@ -43,7 +38,7 @@ const ProductsTable = ({
             product={product}
             productToBeEdited={productToBeEdited}
             productMenuRef={productMenuRef}
-            setIdAndName={setIdAndName}
+            setIdAndNameAndFileName={setIdAndNameAndFileName}
             openModal={openModal}
             setProductToBeEdited={setProductToBeEdited}
           />

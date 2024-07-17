@@ -26,6 +26,15 @@ const baseQuery = fetchBaseQuery({
     if (token) {
       (headers as Headers).set("Authorization", `Bearer ${token}`);
       (headers as Headers).set("Content-Type", "application/json");
+      (headers as Headers).set("Access-Control-Allow-Origin", "*");
+      (headers as Headers).set(
+        "Access-Control-Allow-Methods",
+        "DELETE, POST, GET, OPTIONS"
+      );
+      (headers as Headers).set(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization, X-Requested-With"
+      );
     }
     return headers;
   },

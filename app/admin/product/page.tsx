@@ -87,6 +87,7 @@ const ProductEditCreate = () => {
     setInputs((prev: any) => ({
       ...prev,
       image: imgData?.url,
+      fileName: imgData?.fileName
     }));
     e.target.value = '';
   };

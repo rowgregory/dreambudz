@@ -2,6 +2,7 @@ import Spinner from '@/app/components/common/Spinner';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
+import { FormControl, Switch } from '@chakra-ui/react';
 
 const ProductEditCreateForm = ({
   editPhotoHandler,
@@ -13,12 +14,22 @@ const ProductEditCreateForm = ({
   loadingUpdate,
 }: any) => {
   return (
-    <form className="flex flex-col gap-y-4 border-[1px] border-zinc-800 py-12 px-3 sm:px-8 bg-[#141418]">
-      <div className="grid grid-cols-12 gap-10">
+    <form className="flex flex-col gap-4 border-[1px] border-zinc-800 py-12 px-3 sm:px-8 bg-[#141418]">
+      <div className="grid grid-cols-12 gap-y-6">
+        <div className="col-span-5">Publish</div>
+        <div className="col-start-12 col-span-7 flex self-end justify-end">
+          <FormControl display="flex" alignItems="center">
+            <Switch id="publish" onChange={handleInput} name='publish' isChecked={inputs.publish || false} />
+          </FormControl>
+        </div>
+      </div>
+      <div className="h-[1px] w-full bg-zinc-800 my-12">
+      </div>
+      <div className="grid grid-cols-12 gap-y-6">
         <div className="col-span-12 md:col-span-5">
           Upload an image of your product
         </div>
-        <div className="col-span-12 md:col-span-7 flex justify-center py-4 mx-auto w-full bg-zinc-950 cursor-pointer">
+        <div className="col-span-12 md:col-span-7 flex justify-center p-4 mx-auto w-full bg-zinc-950 cursor-pointer">
           <input
             id="image-file"
             type="file"
@@ -30,8 +41,8 @@ const ProductEditCreateForm = ({
             {inputs.image ? (
               <Image
                 src={inputs.image}
-                alt="Budz of Boston"
-                className="object-cover h-40 w-40 bg-zinc-950 rounded-md"
+                alt="Dream Budz"
+                className="object-contain aspect-square w-full md:w-60 bg-zinc-950 rounded-md"
                 width="0"
                 height="0"
                 sizes="100vw"
@@ -39,7 +50,7 @@ const ProductEditCreateForm = ({
               />
             ) : (
               <div className="flex flex-col justify-center items-center">
-                <div className='h-12 w-12 flex items-center justify-center rounded-full bg-gray-800 mb-1'>
+                <div className="h-12 w-12 flex items-center justify-center rounded-full bg-gray-800 mb-1">
                   <FontAwesomeIcon
                     icon={faCloudArrowUp}
                     className="fa-lg flex justify-center items-center text-gray-200"
@@ -54,7 +65,7 @@ const ProductEditCreateForm = ({
         </div>
       </div>
       <div className="h-[1px] w-full bg-zinc-800 my-12"></div>
-      <div className="grid grid-cols-12 gap-10">
+      <div className="grid grid-cols-12 gap-y-6">
         <div className="col-span-12 md:col-span-5">Product details</div>
         <div className="col-span-12 md:col-span-7 grid gap-6">
           <div className="flex flex-col">
@@ -67,18 +78,6 @@ const ProductEditCreateForm = ({
               onChange={handleInput}
               value={inputs.productName || ''}
               className="border-zinc-700 border-[1px] px-3 text-xs text-white bg-transparent h-10 focus:outline-none input-box"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="quantity" className="text-xs text-zinc-300 mb-1">
-              Quantity
-            </label>
-            <input
-              type="number"
-              name="quantity"
-              onChange={handleInput}
-              value={inputs.quantity || ''}
-              className="border-zinc-700 border-[1px] px-3 text-white bg-transparent h-10 focus:outline-none text-xs input-box"
             />
           </div>
           <div className="flex flex-col">

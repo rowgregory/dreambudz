@@ -35,7 +35,7 @@ const Items = ({ params }: any) => {
           <div className="grid grid-cols-12 gap-6 px-3 lg:px-6">
             {products?.map(
               (product: any, i: number) =>
-                product.quantity >= 1 && (
+                product.publish && (
                   <Link
                     href={{
                       pathname: `/code-validated/${token}/item`,

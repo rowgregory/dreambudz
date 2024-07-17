@@ -17,7 +17,7 @@ import { Fragment, useCallback, useRef, useState } from 'react';
 
 const Products = () => {
   const [text, setText] = useState('');
-  const [idAndName, setIdAndName] = useState({ id: '', name: '' });
+  const [idAndNameAndFileName, setIdAndNameAndFileName] = useState({ id: '', name: '', fileName: '' });
   const products = useAppSelector((state: RootState) => state.product.products);
   const noProducts = products?.length === 0;
   const [productToBeEdited, setProductToBeEdited] = useState({
@@ -48,7 +48,7 @@ const Products = () => {
   return (
     <Fragment>
       <DeleteModal
-        idAndName={idAndName}
+        idAndNameAndFileName={idAndNameAndFileName}
         deleteDocument={deleteProduct}
         loading={loadingDelete}
         hook={{ openModal, show, closeModal }}
@@ -80,7 +80,7 @@ const Products = () => {
                 Add product
               </Link>
             </div>
-            <div className="bg-zinc-900 w-full mt-3">
+            <div className="bg-zinc-900 mt-3">
               {noProducts ? (
                 <div className="flex flex-col justify-center max-w-48 w-full items-center mx-auto  py-10">
                   <div className=" bg-zinc-800 h-12 w-12 flex justify-center items-center">
@@ -93,7 +93,7 @@ const Products = () => {
                   filteredProducts={filteredProducts}
                   productToBeEdited={productToBeEdited}
                   productMenuRef={productMenuRef}
-                  setIdAndName={setIdAndName}
+                  setIdAndNameAndFileName={setIdAndNameAndFileName}
                   openModal={openModal}
                   setProductToBeEdited={setProductToBeEdited}
                 />

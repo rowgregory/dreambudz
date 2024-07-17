@@ -1,4 +1,10 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { app } from "../config/firebaseConfig";
 
 const uploadFileToFirebase = async (file: File) => {
@@ -12,6 +18,7 @@ const uploadFileToFirebase = async (file: File) => {
     return {
       url: downloadURL,
       size: Math.round(snapshot.metadata.size / 1024),
+      fileName: snapshot.metadata.name,
     };
   } catch (error) {
     console.error("Error uploading file:", error);
@@ -26,4 +33,21 @@ const uploadMultipleFilesToFirebase = async (files: FileList | File[]) => {
   return downloadURLs;
 };
 
-export { uploadMultipleFilesToFirebase, uploadFileToFirebase };
+const deleteImageFromFirebase = async (fileName: string) => {
+  const storage = getStorage();
+
+  const desertRef = ref(storage, `images/${fileName}`);
+
+  try {
+    await deleteObject(desertRef);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export {
+  uploadMultipleFilesToFirebase,
+  uploadFileToFirebase,
+  deleteImageFromFirebase,
+};
