@@ -1,32 +1,45 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import PageWrapper from './page-wrapper';
-import { Suspense } from 'react';
+import type { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { Plus_Jakarta_Sans } from 'next/font/google'
+import ReduxWrapper from './redux-wrapper'
+import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] });
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700']
+})
 
 export const metadata: Metadata = {
   title: 'Dream Budz',
-  description: 'Innovative Cannabis Experience',
-};
+  description: 'Innovative Cannabis Experience'
+}
 
-export default function RootLayout({
-  children,
+export default async function RootLayout({
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
+  const headersList = await headers()
+  const userData = headersList.get('x-user')
+
+  let parsedUserData: any
+  if (userData) {
+    parsedUserData = JSON.parse(userData)
+  }
+
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Suspense
-          fallback={
-            <div className="min-h-screen w-full bg-zinc-950 flex justify-center pt-36"></div>
-          }
+      <body className={`${plusJakartaSans.className}`}>
+        <ReduxWrapper
+          data={{
+            isAuthenticated: parsedUserData?.isAuthenticated,
+            userId: parsedUserData?.id,
+            isAdmin: parsedUserData?.isAdmin
+          }}
         >
-          <PageWrapper>{children}</PageWrapper>
-        </Suspense>
+          {children}
+        </ReduxWrapper>
       </body>
     </html>
-  );
+  )
 }

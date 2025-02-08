@@ -1,148 +1,118 @@
-'use client';
+'use client'
 
-import { FormEvent, Fragment, MouseEvent, useState } from 'react';
-import { useDisclosure } from '@chakra-ui/react';
-import Typewriter from '../../components/common/Typewriter';
-import Spinner from '../../components/common/Spinner';
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store';
-import {
-  useCreateCodeMutation,
-  useGetCodeQuery,
-  useUpdateCodeMutation,
-} from '@/app/redux/services/codeApi';
-import {
-  setProgress,
-  toggleProgressBar,
-} from '@/app/redux/features/progress-bar/progressBarSlice';
-import CodeModal from '@/app/redux/features/code/components/CodeModal';
-import { resetCodeSuccessOnly } from '@/app/redux/features/code/codeSlice';
-import useCodeForm from '@/app/redux/features/code/hooks/useCodeForm';
-import useSoundEffect from '@/app/utils/hooks/useSoundEffect';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { FormEvent, MouseEvent, useCallback, useRef, useState } from 'react'
+import Spinner from '../../components/common/Spinner'
+import useSoundEffect from '@/app/hooks/useSoundEffect'
+import AdminCommandArea from '@/app/components/AdminCommandArea'
+import AdminErrorText from '@/app/components/AdminErrorText'
+import useForm from '@/app/hooks/useForm'
+import useOutsideDetect from '@/app/utils/useOutsideDetect'
+import { useGetCodeQuery, useUpdateCodeMutation } from '@/app/redux/services/codeApi'
+import { resetCodeError } from '@/app/redux/features/codeSlice'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import validateAdminUpdateCodeForm from '@/app/validations/validateAdminUpdateCodeForm'
+import AwesomeIcon from '@/app/components/common/AwesomeIcon'
+import { faCodeCompare } from '@fortawesome/free-solid-svg-icons'
 
 const Code = () => {
-  const dispatch = useAppDispatch();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [createCode, { isLoading: loadingCreate }] = useCreateCodeMutation();
-  const [updateCode, { isLoading: loadingUpdate }] = useUpdateCodeMutation();
-  const { isLoading } = useGetCodeQuery();
-  const code = useAppSelector((state: RootState) => state.code);
-  const isEditMode = !!code?.code;
+  const dispatch = useAppDispatch()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [updateCode, { isLoading: loadingUpdateCode }] = useUpdateCodeMutation()
+  const { isLoading: loadingGetCode, error: errorGetCode, data } = useGetCodeQuery()
+  const { error: errorUpdateCode } = useAppSelector((state: RootState) => state.code)
+  const { play: successSE } = useSoundEffect('/sound-effects/level-up.mp3', true)
+  const { play: errorSE } = useSoundEffect('/sound-effects/error-2.mp3', true)
+  const { inputs, errors, handleInput, setInputs, setErrors } = useForm({ code: '' }, validateAdminUpdateCodeForm, data?.code)
+  const [reveal, setReveal] = useState(false)
 
-  const codeUpdatedSoundEffect = useSoundEffect(
-    '/sound-effects/cartoon-blink-fast.mp3'
-  );
-  const codeCreatedSoundEffect = useSoundEffect(
-    '/sound-effects/ascent-cartoon-top-toes.mp3'
-  );
+  const handleUpdate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
-  const { handleInput, inputs } = useCodeForm(code);
-  const [reveal, setReveal] = useState(false);
+    const isValid = validateAdminUpdateCodeForm(inputs, setErrors)
+    if (!isValid) return
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch(toggleProgressBar(true));
-    dispatch(setProgress(15));
-    if (isEditMode) {
-      await updateCode(inputs)
-        .unwrap()
-        .then(() => {
-          dispatch(setProgress(75));
-          codeUpdatedSoundEffect?.play();
-          dispatch(setProgress(100));
-
-          setTimeout(() => {
-            dispatch(setProgress(0));
-            dispatch(toggleProgressBar(false));
-            onClose();
-            setReveal(true);
-            dispatch(resetCodeSuccessOnly());
-          }, 1000);
-        })
-        .catch((err: any) => {
-          dispatch(setProgress(0));
-          dispatch(toggleProgressBar(false));
-          console.error(err);
-        });
-    } else {
-      await createCode(inputs)
-        .unwrap()
-        .then(() => {
-          dispatch(setProgress(75));
-          codeCreatedSoundEffect?.play();
-          dispatch(setProgress(100));
-
-          setTimeout(() => {
-            dispatch(setProgress(0));
-            dispatch(toggleProgressBar(false));
-            onClose();
-            setReveal(true);
-            dispatch(resetCodeSuccessOnly());
-          }, 250);
-        })
-        .catch((err: any) => {
-          dispatch(setProgress(0));
-          dispatch(toggleProgressBar(false));
-          console.error(err);
-        });
+    try {
+      await updateCode(inputs).unwrap()
+      setReveal(false)
+      successSE()
+    } catch (error) {
+      errorSE()
     }
-  };
+  }
+
+  const handleClose = useCallback(() => {
+    dispatch(resetCodeError())
+    setReveal(false)
+    if (inputs.code === '') setInputs({ code: data?.code?.code })
+    setErrors({})
+  }, [dispatch, data, inputs, setInputs, setErrors])
+
+  useOutsideDetect(containerRef, handleClose)
 
   return (
-    <Fragment>
-      <CodeModal
-        isOpen={isOpen}
-        onClose={onClose}
-        isEditMode={isEditMode}
-        handleInput={handleInput}
-        inputs={inputs}
-        handleSubmit={handleSubmit}
-        isLoading={loadingUpdate || loadingCreate}
-        codeUpdated={code.success}
-      />
-      <div className="min-h-screen pt-12 md:pt-16 px-[10px] sm:px-[16px] md:px-8 pb-3">
-        <div className="max-w-screen-lg w-full mx-auto">
-          <div className="font-Matter-Medium text-xl mb-3.5">Code</div>
-          <div
-            onClick={() => {
-              onOpen();
-              setReveal(false);
-            }}
-            className="w-fit min-w-40 h-40 border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center text-center group hover:bg-[#121214] duration-200 cursor-pointer px-4"
-          >
-            {isLoading ? (
-              <Spinner />
-            ) : (
-              <Fragment>
-                <Typewriter
-                  sentence={isEditMode ? 'Update' : 'Create'}
-                  speed={50}
-                  text="text-xs"
-                />
-                {isEditMode ? (
-                  <p
-                    onClick={(e: MouseEvent<HTMLParagraphElement>) => {
-                      e.stopPropagation();
-                      setReveal(!reveal);
-                    }}
-                    className="relative z-10 text-sm text-lime-400 mt-2 font-bold hover:bg-zinc-950 hover:rounded-md p-1 duration-200"
-                  >
-                    {reveal ? inputs.code : '****'}
-                  </p>
-                ) : (
-                  <FontAwesomeIcon
-                    icon={faCode}
-                    className="text-lime-400 text-sm mt-2"
-                  />
-                )}
-              </Fragment>
-            )}
+    <>
+      <AdminCommandArea type="CODE" />
+      {loadingGetCode ? (
+        <div className="overflow-hidden">
+          <div className={`bg-transparent fixed w-full inset-0 flex items-center justify-center z-[70]`}>
+            <Spinner wAndH="w-10 h-10" fill="fill-lime-400" />
           </div>
         </div>
-      </div>
-    </Fragment>
-  );
-};
+      ) : errorGetCode?.data?.message ? (
+        <AdminErrorText error={errorGetCode?.data?.message} />
+      ) : (
+        <div
+          ref={containerRef}
+          className="max-w-sm bg-gradient-to-r from-indigo-600 to-indigo-400 animate-fadeIn aspect-video w-full flex flex-col items-center justify-center text-center cursor-pointer px-4 relative overflow-hidden group"
+        >
+          <AwesomeIcon
+            icon={faCodeCompare}
+            className="text-white/10 text-[200px] absolute -right-16 -top-0 group-hover:-rotate-12 duration-300 transform origin-bottom"
+          />
+          {reveal ? (
+            <form onSubmit={handleUpdate} className="flex flex-col">
+              <input
+                ref={inputRef}
+                autoComplete="off"
+                type="text"
+                name="code"
+                onChange={handleInput}
+                value={(inputs.code as string) || ''}
+                className="admin-code-page bg-transparent text-center text-4xl text-white font-bold focus:outline-none border-none w-full"
+              />
+              {loadingUpdateCode ? (
+                <div className="absolute bottom-2 transform -translate-x-1/2 left-1/2">
+                  <Spinner wAndH="w-5 h-5" fill="fill-white" />
+                </div>
+              ) : (
+                <button type="submit" className="text-white font-bold absolute bottom-2 transform -translate-x-1/2 left-1/2">
+                  Update
+                </button>
+              )}
+            </form>
+          ) : (
+            <p
+              onClick={(e: MouseEvent<HTMLParagraphElement>) => {
+                e.stopPropagation()
+                setReveal(true)
+                setTimeout(() => inputRef.current?.focus(), 0)
+              }}
+              className="text-4xl text-white font-bold"
+            >
+              {inputs.code}
+            </p>
+          )}
+          {errorUpdateCode ||
+            (errors.code && (
+              <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-6">
+                <AdminErrorText error={errorUpdateCode || errors.code} />
+              </div>
+            ))}
+        </div>
+      )}
+    </>
+  )
+}
 
-export default Code;
+export default Code

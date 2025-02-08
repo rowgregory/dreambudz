@@ -1,25 +1,24 @@
-'use client';
+'use client'
 
-import React from 'react';
-import ProgressBar from './components/common/ProgressBar';
-import { Provider } from 'react-redux';
-import { persistor, store } from './redux/store';
-import { PersistGate } from 'redux-persist/integration/react';
-import { ChakraProvider } from '@chakra-ui/react';
+import React, { FC, useEffect } from 'react'
+import ProgressBar from './components/common/ProgressBar'
+import { ClientPageProps } from './types/common.types'
+import { useAppDispatch } from './redux/store'
+import { setAuthState } from './redux/features/authSlice'
 
-const PageWrapper = ({ children }: any) => {
+const PageWrapper: FC<ClientPageProps> = ({ children, data }) => {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    dispatch(setAuthState(data))
+  }, [dispatch, data])
+
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ChakraProvider>
-          <ProgressBar />
-          <div className="bg-zinc-950 min-h-screen text-zinc-200">
-            {children}
-          </div>
-        </ChakraProvider>
-      </PersistGate>
-    </Provider>
-  );
-};
+    <>
+      <ProgressBar />
+      <div className="bg-deepslate min-h-dvh text-zinc-200">{children}</div>
+    </>
+  )
+}
 
-export default PageWrapper;
+export default PageWrapper

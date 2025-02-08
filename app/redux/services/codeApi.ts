@@ -4,16 +4,9 @@ const BASE_URL = "/code";
 
 export const codeApi = api.injectEndpoints({
   endpoints: (build: any) => ({
-    verifyCode: build.mutation({
-      query: (code: any) => ({
-        url: `${BASE_URL}/verify?endpoint=VERIFY_CODE`,
-        method: "POST",
-        body: code,
-      }),
-    }),
     createCode: build.mutation({
       query: (code: any) => ({
-        url: `${BASE_URL}?endpoint=CREATE_CODE`,
+        url: `${BASE_URL}/create-code`,
         method: "POST",
         body: code,
       }),
@@ -21,22 +14,18 @@ export const codeApi = api.injectEndpoints({
     }),
     updateCode: build.mutation({
       query: (body: any) => ({
-        url: `${BASE_URL}?endpoint=UPDATE_CODE`,
-        method: "PATCH",
+        url: `${BASE_URL}/update-code`,
+        method: "PUT",
         body,
       }),
       invalidatesTags: ["Code", "Dashboard"],
     }),
     getCode: build.query({
-      query: () => `${BASE_URL}?endpoint=FETCH_CODE`,
+      query: () => `${BASE_URL}/fetch-code`,
       providesTags: ["Code"],
     }),
   }),
 });
 
-export const {
-  useVerifyCodeMutation,
-  useCreateCodeMutation,
-  useUpdateCodeMutation,
-  useGetCodeQuery,
-} = codeApi;
+export const { useCreateCodeMutation, useUpdateCodeMutation, useGetCodeQuery } =
+  codeApi;

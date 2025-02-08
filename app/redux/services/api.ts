@@ -1,11 +1,14 @@
 "use client";
 
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
-import { RootState } from "../store";
+
 const fetchFn = async (
   url: RequestInfo,
   options?: RequestInit
 ): Promise<Response> => {
+  if (process.env.NODE_ENV !== "test") {
+    throw new Error("fetchFn should only be used in tests");
+  }
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
@@ -17,27 +20,18 @@ const fetchFn = async (
     throw error; // Propagate error
   }
 };
+
 const baseQuery = fetchBaseQuery({
   baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api`,
-  fetchFn,
-  // credentials: "same-origin",
-  prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth?.token;
-    if (token) {
-      (headers as Headers).set("Authorization", `Bearer ${token}`);
-      (headers as Headers).set("Content-Type", "application/json");
-      (headers as Headers).set("Access-Control-Allow-Origin", "*");
-      (headers as Headers).set(
-        "Access-Control-Allow-Methods",
-        "DELETE, POST, GET, OPTIONS"
-      );
-      (headers as Headers).set(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Authorization, X-Requested-With"
-      );
-    }
+  fetchFn: process.env.NODE_ENV === "test" ? fetchFn : undefined,
+  prepareHeaders: (headers) => {
+    headers.set("Content-Type", "application/json");
     return headers;
   },
+  // This ensures that cookies are included in
+  // both the frontend and backend communication.
+  credentials: "include",
+  // cache: "no-store",
 });
 
 export const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
@@ -45,6 +39,6 @@ export const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
 export const api = createApi({
   reducerPath: "splitApi",
   baseQuery: baseQueryWithRetry,
-  tagTypes: ["Auth", "Code", "Product", "Dashboard"],
+  tagTypes: ["Auth", "Code", "Product", "Dashboard", "Visitor", "User"],
   endpoints: () => ({}),
 }) as any;

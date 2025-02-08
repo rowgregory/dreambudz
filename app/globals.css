@@ -25,6 +25,15 @@ body {
   }
 }
 
+.box {
+  width: 150px;
+  height: 150px;
+  border-radius: 1em;
+  background-color: #f9f07e;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .input-box:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
   box-shadow: 0 0 0 1000px transparent inset !important;
@@ -34,6 +43,16 @@ body {
   background-clip: border-box !important;
   transition: background-color 5000s ease-in-out 0s !important;
   font-size: 12px !important;
+}
+.admin-code-page:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: #fff !important;
+  color: #fff !important;
+  background-color: transparent !important;
+  background-clip: border-box !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  font-size: 36px !important;
 }
 
 ::-webkit-scrollbar {

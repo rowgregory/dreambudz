@@ -1,33 +1,34 @@
 'use client'
 
-import React, { ReactNode, useState } from 'react';
-import AdminSideNavigation from '../redux/features/dashboard/components/AdminSideNavigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import AdminMobileNavigation from '../redux/features/dashboard/components/AdminMobileNavigation';
-import PrivateRoute from '../components/common/PrivateRoute';
+import React, { FC } from 'react'
+import AdminMobileNavigation from '../components/AdminMobileNavigation'
+import AdminHeader from '../components/AdminHeader'
+import AwesomeIcon from '../components/common/AwesomeIcon'
+import { barsIcon } from '../icons'
+import { useAppDispatch } from '../redux/store'
+import NavigationLayout from './navigation-layout'
+import { ChildrenProps } from '../types/common.types'
+import { setOpenAdminMobileNavigation } from '../redux/features/dashboardSlice'
 
-const AdminLayout = ({ children }: { children: ReactNode }) => {
-  const [toggleMobileMenu, setToggleMobileMenu] = useState(false);
-  const close = () => setToggleMobileMenu(false);
+const AdminLayout: FC<ChildrenProps> = ({ children }) => {
+  const dispatch = useAppDispatch()
+
   return (
-    <PrivateRoute>
-      <div className="flex min-h-screen">
-        <FontAwesomeIcon onClick={() => setToggleMobileMenu(!toggleMobileMenu)}
-          icon={faBars}
-          className="block lg:hidden fa-solid text-lime-500 col-span-2 py-2 pl-2 pr-3 w-fit duration-200 hover:text-lime-400 absolute top-2 right-2 cursor-pointer z-20"
+    <>
+      <AdminHeader />
+      <AdminMobileNavigation />
+      <main className="px-3 py-8 bg-[#1c1c1e] min-h-[calc(100dvh-48px)] relative">
+        <AwesomeIcon
+          onClick={() => dispatch(setOpenAdminMobileNavigation())}
+          icon={barsIcon}
+          className="w-5 h-4 text-white block md:hidden absolute top-4 left-4 cursor-pointer"
         />
-        <AdminMobileNavigation
-          toggleMobileMenu={toggleMobileMenu}
-          close={close}
-        />
-        <aside className="hidden lg:block lg:w-[240px] bg-zinc-900">
-          <AdminSideNavigation />
-        </aside>
-        <main className="max-w-screen-xl w-full mx-auto">{children}</main>
-      </div>
-    </PrivateRoute>
-  );
-};
+        <div className="max-w-96 md:max-w-[690px] lg:max-w-[1035px] 2xl:max-w-[1380px] mx-auto w-full">
+          <NavigationLayout>{children}</NavigationLayout>
+        </div>
+      </main>
+    </>
+  )
+}
 
-export default AdminLayout;
+export default AdminLayout

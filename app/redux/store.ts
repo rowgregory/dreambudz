@@ -3,28 +3,23 @@
 import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { authReducer } from "./features/auth/authSlice";
-import { persistStore, persistReducer } from "redux-persist";
+import { authReducer } from "./features/authSlice";
 import { api } from "./services/api";
-import storage from "../utils/createNoopStorage";
-import { progressBarReducer } from "./features/progress-bar/progressBarSlice";
-import { dashboardReducer } from "./features/dashboard/dashboardSlice";
-import { productReducer } from "./features/product/productSlice";
-import { codeReducer } from "./features/code/codeSlice";
+import { progressBarReducer } from "./features/progressBarSlice";
+import { dashboardReducer } from "./features/dashboardSlice";
+import { productReducer } from "./features/productSlice";
+import { codeReducer } from "./features/codeSlice";
+import { visitorReducer } from "./features/visitorSlice";
+import { userReducer } from "./features/userSlice";
 
 const rootReducer = combineReducers({
-  auth: persistReducer(
-    {
-      key: "auth",
-      storage,
-      blacklist: ["success"], // do not persist 'success' within 'auth'
-    },
-    authReducer
-  ),
+  auth: authReducer,
   dashboard: dashboardReducer,
   product: productReducer,
   code: codeReducer,
   progressBar: progressBarReducer,
+  visitor: visitorReducer,
+  user: userReducer,
   [api.reducerPath]: api.reducer,
 });
 
@@ -36,8 +31,6 @@ export const store = configureStore({
       serializableCheck: false,
     }).concat(api.middleware),
 });
-
-export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 

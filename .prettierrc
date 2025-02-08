@@ -5,7 +5,10 @@
       "options": {
         "parser": "typescript",
         "jsxBracketSameLine": false,
-        "singleQuote": true
+        "singleQuote": true,
+        "trailingComma": "none",
+        "semi": false,
+        "printWidth": 140
       }
     }
   ]

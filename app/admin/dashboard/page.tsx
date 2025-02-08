@@ -1,89 +1,71 @@
-'use client';
+'use client'
 
-import { Fragment, useState } from 'react';
-import Spinner from '../../components/common/Spinner';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { formatDateWithTimezone } from '@/app/utils/dateFunctions';
-import { RootState, useAppSelector } from '@/app/redux/store';
-import { useGetDashboardDataQuery } from '@/app/redux/services/dashboardApi';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoxOpen, faCodeCompare } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react'
+import Spinner from '../../components/common/Spinner'
+import { useFetchDashboardDetailsQuery } from '@/app/redux/services/dashboardApi'
+import { faBoxOpen, faCodeCompare, faUser } from '@fortawesome/free-solid-svg-icons'
+import AdminCommandArea from '@/app/components/AdminCommandArea'
+import AdminErrorText from '@/app/components/AdminErrorText'
+import DashboardBox from '@/app/components/DashboardBox'
+
+const boxes = (data: any, showCode: boolean, setShowCode: (showCode: boolean) => void) => [
+  {
+    linkKey: '/admin/products',
+    linkClassName:
+      'col-span-12 md:col-span-6 h-40 bg-gradient-to-r from-sky-800 to-sky-300 rounded-sm px-8 py-5 cursor-pointer relative overflow-hidden flex flex-col justify-between',
+    title: 'Products',
+    value: data?.product?.productsCount,
+    icon: faBoxOpen
+  },
+  {
+    linkKey: '/admin/code',
+    linkClassName:
+      'col-span-12 md:col-span-6 h-40 bg-gradient-to-r from-indigo-800 to-indigo-300 rounded-sm px-8 py-5 cursor-pointer relative overflow-hidden flex flex-col justify-between',
+    title: 'Code',
+    value: showCode ? data?.code?.code : '****',
+    icon: faCodeCompare,
+    onClick: (e: any) => {
+      e.stopPropagation()
+      e.preventDefault()
+      setShowCode(!showCode)
+    }
+  },
+  {
+    linkKey: '/admin/visitors',
+    linkClassName:
+      'col-span-12 md:col-span-6 h-40 bg-gradient-to-r from-teal-800 to-teal-300 rounded-sm px-8 py-5 cursor-pointer relative overflow-hidden flex flex-col justify-between',
+    title: 'Visistors',
+    value: data.visitor.total,
+    last24Hours: data.visitor.last24Hours,
+    lastWeek: data.visitor.lastWeek,
+    icon: faUser
+  }
+]
 
 const Dashboard = () => {
-  const navigate = useRouter();
-  const dashboardInfo = useAppSelector(
-    (state: RootState) => state.dashboard.info
-  );
-
-  const [showCode, setShowCode] = useState(false);
-
-  const { isLoading } = useGetDashboardDataQuery();
+  const [showCode, setShowCode] = useState(false)
+  const { isLoading, data, error } = useFetchDashboardDetailsQuery()
 
   return (
-    <div className="min-h-screen pt-12 md:pt-16 px-[10px] sm:px-[16px] md:px-8 pb-3">
-      <div className="font-Matter-Medium text-xl mb-3.5">Dashboard</div>
-      <div className="max-w-screen-lg w-full mx-auto grid grid-cols-12 gap-8 ">
-        <Link
-          href="/admin/products"
-          className="col-span-12 md:col-span-6 h-40 bg-gradient-to-r from-blue-800 to-blue-300 rounded-sm px-8 py-5 cursor-pointer relative overflow-hidden flex flex-col justify-between"
-        >
-          {isLoading ? (
-            <div className="m-auto">
-              <Spinner fill="fill-white" />
-            </div>
-          ) : (
-            <Fragment>
-              <p className="uppercase font-thin tracking-wider text-sm">
-                Products
-              </p>
-              <h1 className="text-5xl font-semibold">
-                {dashboardInfo?.productsCount}
-              </h1>
-              <p className="text-xs text-white/50">
-                Last created: {formatDateWithTimezone(dashboardInfo?.createdAt)}
-              </p>
-            </Fragment>
-          )}
-          <FontAwesomeIcon
-            icon={faBoxOpen}
-            className="text-white/10 text-[200px] absolute -right-16 -top-0"
-          />
-        </Link>
-        <button
-          onClick={() => navigate.push('/admin/code')}
-          className="col-span-12 md:col-span-6 h-40 bg-gradient-to-r from-lime-800 to-lime-300 rounded-sm px-8 py-5 cursor-pointer flex flex-col justify-between relative overflow-hidden"
-        >
-          {isLoading ? (
-            <div className="m-auto">
-              <Spinner fill="fill-white" />
-            </div>
-          ) : (
-            <Fragment>
-              <p className="uppercase font-thin tracking-wider text-sm">Code</p>
-              <h1
-                onClick={(e: any) => {
-                  e.stopPropagation();
-                  setShowCode(!showCode);
-                }}
-                className="text-5xl font-semibold w-fit"
-              >
-                {showCode ? dashboardInfo?.code?.code : '****'}
-              </h1>
-              <p className="text-xs text-white/50">
-                Last updated:{' '}
-                {formatDateWithTimezone(dashboardInfo?.code?.updatedAt)}
-              </p>
-            </Fragment>
-          )}
-          <FontAwesomeIcon
-            icon={faCodeCompare}
-            className="text-white/15 text-[200px] absolute -right-16 -top-0"
-          />
-        </button>
-      </div>
-    </div>
-  );
-};
+    <>
+      <AdminCommandArea type="DASHBOARD" />
+      {isLoading ? (
+        <div className="overflow-hidden">
+          <div className={`bg-transparent fixed w-full inset-0 flex items-center justify-center z-60`}>
+            <Spinner wAndH="w-10 h-10" fill="fill-lime-400" />
+          </div>
+        </div>
+      ) : error ? (
+        <AdminErrorText error={error?.data?.message} />
+      ) : (
+        <div className="grid grid-cols-12 gap-y-8 480:gap-8 animate-fadeIn">
+          {boxes(data, showCode, setShowCode)?.map((box: any, i: number) => (
+            <DashboardBox key={i} box={box} isLoading={isLoading} />
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
 
-export default Dashboard;
+export default Dashboard
